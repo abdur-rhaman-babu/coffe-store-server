@@ -1,5 +1,5 @@
 const express = require("express");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 const cors = require("cors");
 const app = express();
@@ -22,24 +22,27 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-
     const coffeeCollection = client.db("coffeeDB").collection("coffees");
 
-    app.get('/coffees', async(req, res)=>{
-        const cursor = coffeeCollection.find()
-        const result = await cursor.toArray()
-        res.send(result)
-    })
-   
-    app.post("/coffees", async (req, res) => {
-      const newCoffee = req.body;
-      console.log(newCoffee);
-
-      const result = await coffeeCollection.insertOne(newCoffee)
-      res.send(result)
+    app.get("/coffees", async (req, res) => {
+      const cursor = coffeeCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
     });
 
+    app.post("/coffees", async (req, res) => {
+      const newCoffee = req.body;
+      // console.log(newCoffee);
+      const result = await coffeeCollection.insertOne(newCoffee);
+      res.send(result);
+    });
 
+    app.delete("/coffees/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await coffeeCollection.deleteOne(query);
+      res.send(result);
+    });
 
     // await client.db("admin").command({ ping: 1 });
     // console.log("Pinged your deployment. You successfully connected to MongoDB!");
