@@ -23,7 +23,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     const coffeeCollection = client.db("coffeeDB").collection("coffees");
-    const userCollection = client.db("coffeeDB").collection('users')
+    const userCollection = client.db("coffeeDB").collection("users");
     // read data
     app.get("/coffees", async (req, res) => {
       const cursor = coffeeCollection.find();
@@ -55,8 +55,8 @@ async function run() {
           photo: updatedCoffee.photo,
         },
       };
-      const result = await coffeeCollection.updateOne(filter, coffee, options)
-      res.send(result)
+      const result = await coffeeCollection.updateOne(filter, coffee, options);
+      res.send(result);
     });
 
     // create data
@@ -75,12 +75,28 @@ async function run() {
     });
 
     // user related database
-      app.post('/users', async(req, res)=> {
-        const newUser = req.body;
-        console.log('creating new user', newUser)
-        const result = await userCollection.insertOne(newUser)
-        res.send(result)
-      })
+    // read user
+    app.get("/users", async (req, res) => {
+      const cursor = userCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+    });
+
+    // create user
+    app.post("/users", async (req, res) => {
+      const newUser = req.body;
+      console.log("creating new user", newUser);
+      const result = await userCollection.insertOne(newUser);
+      res.send(result);
+    });
+
+    // delete user
+    app.delete("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await userCollection.deleteOne(query);
+      res.send(result);
+    });
 
     // await client.db("admin").command({ ping: 1 });
     // console.log("Pinged your deployment. You successfully connected to MongoDB!");
