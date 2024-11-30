@@ -23,7 +23,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     const coffeeCollection = client.db("coffeeDB").collection("coffees");
-
+    const userCollection = client.db("coffeeDB").collection('users')
     // read data
     app.get("/coffees", async (req, res) => {
       const cursor = coffeeCollection.find();
@@ -73,6 +73,14 @@ async function run() {
       const result = await coffeeCollection.deleteOne(query);
       res.send(result);
     });
+
+    // user related database
+      app.post('/users', async(req, res)=> {
+        const newUser = req.body;
+        console.log('creating new user', newUser)
+        const result = await userCollection.insertOne(newUser)
+        res.send(result)
+      })
 
     // await client.db("admin").command({ ping: 1 });
     // console.log("Pinged your deployment. You successfully connected to MongoDB!");
