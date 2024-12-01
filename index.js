@@ -90,6 +90,18 @@ async function run() {
       res.send(result);
     });
 
+    // loginInfo
+    app.patch("/users", async (req, res) => {
+      const email = req.body.email;
+      const filter = { email };
+      const updatedDoc = {
+        $set: {
+          lastSignInTime: req.body?.lastSignInTime,
+        },
+      };
+      const result = await userCollection.updateOne(filter, updatedDoc);
+    });
+
     // delete user
     app.delete("/users/:id", async (req, res) => {
       const id = req.params.id;
